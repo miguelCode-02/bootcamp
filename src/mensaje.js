@@ -1,9 +1,9 @@
-const Mensaje = (props) => {
-    console.log(props)
+const Mensaje = ({color, mensaje}) => {
+    console.log({color : color, mensaje : mensaje})
     return (
         <div>
-            <h1 style={{ color: props.color }}>
-                {props.mensaje}
+            <h1 style={{ color: color }}>
+                {mensaje}
             </h1>
         </div>
     )
