@@ -1,8 +1,8 @@
 import { useState } from 'react'
+import { Note } from './modulos'
 
+//! Clase numero 1
 const Message = ({ color, mensaje }) => {
-    console.log({ color, mensaje })
-
     return (
         <div>
             <h1 style={{ color: color }}>
@@ -12,6 +12,8 @@ const Message = ({ color, mensaje }) => {
     )
 }
 
+
+//! Clase numero 2
 const CounterClick = ({ numero }) => {
     return (<h1>{numero}</h1>)
 }
@@ -20,7 +22,6 @@ const Counter = () => {
     const [contador, setContador] = useState(0);
 
     const efectoClick = (evento) => {
-        console.log(evento)
         setContador(contador + 1)
     }
 
@@ -45,9 +46,11 @@ const Counter = () => {
     )
 }
 
-const Info = () => (<h1>Estas perdido? no hay nada por aqui</h1>)
 
-const ArrayWords = ({array}) => (<h1>{array.join(" - ")}</h1>)
+//! Clase numero 3
+const Info = () => (<h1>Porque no haces click?</h1>)
+
+const ArrayWords = ({ array }) => (<h1>{array.join(" - ")}</h1>)
 
 
 const Clicks = () => {
@@ -60,38 +63,92 @@ const Clicks = () => {
     const [clicks, setClicks] = useState([])
 
 
-    const ClickLeft = () =>{
+    const ClickLeft = () => {
         const newCounterLeft = {
             ...counter,
-            counterLeft : (counter.counterLeft + 1),
+            counterLeft: (counter.counterLeft + 1),
         }
         setCounter(newCounterLeft)
         setClicks(click => {
-         return [...click, 'L']
+            return [...click, 'L']
         })
     }
 
     const ClickRight = () => {
         const newCounterRight = {
             ...counter,
-            counterRight:(counter.counterRight + 1),
+            counterRight: (counter.counterRight + 1),
         }
         setCounter(newCounterRight)
         setClicks(click => {
-        return [...click, 'R']
+            return [...click, 'R']
         })
     }
 
     return (
         <div>
-            <strong style={{fontSize:"30px"}}>{counter.counterLeft}</strong>
+            <strong style={{ fontSize: "30px" }}>{counter.counterLeft}</strong>
             <button onClick={ClickLeft}>Botonizquierdo</button>
             <button onClick={ClickRight}>Botonderecho</button>
-            <strong style={{fontSize:"30px"}}>{counter.counterRight}</strong>
+            <strong style={{ fontSize: "30px" }}>{counter.counterRight}</strong>
             <h1>Clic totales: {clicks.length}</h1>
-            <div>{clicks.length === 0 ? <Info/> : <ArrayWords array={clicks}/>}</div>
+            <div>{clicks.length === 0 ? <Info /> : <ArrayWords array={clicks} />}</div>
         </div>
     )
 }
 
-export { Message, Counter, Clicks }
+
+//! Clase numero 4
+
+const RenderList = (props) => {
+
+    const [notes, setNotes] = useState(props.notes)
+    const [newNote, setNewNote] = useState('')
+    const [showAll, setShowAll] = useState(true)
+
+    const handleChange = (event) => {
+        setNewNote(event.target.value)
+    }
+
+    const handleSubmit = (event) => {
+        event.preventDefault()
+        console.log('Nota creada');
+        const newNoteAddNew = {
+            id: notes.length + 1,
+            content: newNote,
+            date: new Date().toISOString(),
+            important: Math.random() > 0.5,
+        }
+
+        const newNoteAdd = notes.concat(newNoteAddNew)
+        setNotes(newNoteAdd)
+        setNewNote("")
+    }
+
+    const handleShowAll = () => {
+        setShowAll(!showAll)
+    }
+
+    if (notes.length === 0) {
+        return <h1>No hay nada que mostrar</h1>
+    }
+
+    return (
+        <div>
+            <h1>Notas</h1>
+            <button onClick={handleShowAll}>{showAll ? 'Mostrar solo importante' : 'Mostrar todo'}</button>
+            <ol>
+                {notes.filter(note => {
+                    if (showAll === true) return note
+                    return note.important === true
+                }).map(note => <Note key={note.id} {...note} />)}
+            </ol>
+            <form onSubmit={handleSubmit}>
+                <input type={'text'} onChange={handleChange} value={newNote} />
+                <button >Crear nota</button>
+            </form>
+        </div>
+    )
+}
+
+export { Message, Counter, Clicks, RenderList }
