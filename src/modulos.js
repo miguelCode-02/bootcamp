@@ -4,7 +4,7 @@ const Note = ({ categories=[], content = "", date = "", important = false }) => 
             <h1>{important ? "Es importante" : "No es importante"}</h1>
             <p>{content}</p>
             <small>
-                <time dateTime = "AAAA-MM-DD">{date}</time>
+                <time >{date}</time>
             </small>
             <p>{categories.map(categori => <span key={categori}>{categori} </span>)}</p>
         </li>
