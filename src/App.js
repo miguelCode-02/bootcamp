@@ -1,5 +1,5 @@
 import './App.css';
-import {Message,Counter,Clicks} from './mensaje.js'
+import {Message,Counter,Clicks,RenderList} from './mensaje.js'
 
 
 function App() {
@@ -13,6 +13,9 @@ function App() {
         <br/>
         <hr/>
         <Clicks/>
+        <br/>
+        <hr/>
+        <RenderList/>
     </div>
   );
 }
