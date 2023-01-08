@@ -136,7 +136,7 @@ const RenderList = (props) => {
     return (
         <div>
             <h1>Notas</h1>
-            <button onClick={handleShowAll}>{showAll ? 'Mostrar todo' : 'Solo importante'}</button>
+            <button onClick={handleShowAll}>{showAll ? 'Mostrar solo importante' : 'Mostrar todo'}</button>
             <ol>
                 {notes.filter(note => {
                     if (showAll === true) return note
