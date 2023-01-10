@@ -141,6 +141,7 @@ const RenderList = (props) => {
                 {notes.filter(note => {
                     if (showAll === true) return note
                     return note.important === true
+
                 }).map(note => <Note key={note.id} {...note} />)}
             </ol>
             <form onSubmit={handleSubmit}>
