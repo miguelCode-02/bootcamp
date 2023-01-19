@@ -133,8 +133,10 @@ const RenderList = () => {
             userId : 1,
         }
 
-        createNote(newNoteAddNew).then((newNote) => {
-            setNotes((prevNotes) => prevNotes.concat(newNote))
+        setNotes((prevNotes) => prevNotes.concat(newNoteAddNew))
+
+        createNote(newNoteAddNew).then(() => {
+            alert("Nota guardada")
         }).catch((error)=>{
             console.error(error)
             setError("BOOM me he reventado chaval :C")
@@ -160,6 +162,7 @@ const RenderList = () => {
                 <input type={'text'} onChange={handleChange} value={newNote} />
                 <button >Crear nota</button>
             </form>
+
             {error ? <p style={{color : 'red'}}>{error}</p> : ""}
         </div>
     )
