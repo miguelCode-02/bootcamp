@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Note } from './modulos'
+import {getAllNotes} from './services/notes/getAllNotes.js'
+import { createNote } from './services/notes/createNote'
 
 //! Clase numero 1
 const Message = ({ color, mensaje }) => {
@@ -98,13 +100,25 @@ const Clicks = () => {
 }
 
 
-//! Clase numero 4
+//! Clase numero 4 & 5
 
-const RenderList = (props) => {
+const RenderList = () => {
 
-    const [notes, setNotes] = useState(props.notes)
+    const [notes, setNotes] = useState([])
     const [newNote, setNewNote] = useState('')
-    const [showAll, setShowAll] = useState(true)
+    const [loading, setLoading] = useState(false)
+    const [filter, setFilter] = useState('')
+    const [error, setError] = useState('')
+
+
+    useEffect(() => {
+        setLoading(true)
+        getAllNotes().then((notes) => {
+            setNotes(notes)
+            setLoading(false)
+        })
+
+    }, [filter])
 
     const handleChange = (event) => {
         setNewNote(event.target.value)
@@ -112,41 +126,41 @@ const RenderList = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        console.log('Nota creada');
+
         const newNoteAddNew = {
-            id: notes.length + 1,
-            content: newNote,
-            date: new Date().toISOString(),
-            important: Math.random() > 0.5,
+            title: newNote,
+            body: newNote,
+            userId : 1,
         }
 
-        const newNoteAdd = notes.concat(newNoteAddNew)
-        setNotes(newNoteAdd)
+        createNote(newNoteAddNew).then((newNote) => {
+            setNotes((prevNotes) => prevNotes.concat(newNote))
+        }).catch((error)=>{
+            console.error(error)
+            setError("BOOM me he reventado chaval :C")
+        })
+
         setNewNote("")
     }
 
-    const handleShowAll = () => {
-        setShowAll(!showAll)
-    }
+    const handleFilter = (event) => setFilter(event.target.value)
 
-    if (notes.length === 0) {
-        return <h1>No hay nada que mostrar</h1>
-    }
 
     return (
         <div>
             <h1>Notas</h1>
-            <button onClick={handleShowAll}>{showAll ? 'Mostrar solo importante' : 'Mostrar todo'}</button>
-            <ol>
-                {notes.filter(note => {
-                    if (showAll === true) return note
-                    return note.important === true
+            <input  type={'text'} onChange={handleFilter}></input>
+            <p>{loading ? "Cargando...." : ""}</p>
+            <ol style={{ textAlign: "left" }}>
+                {notes.filter((note) => {
+                    return note.title.startsWith(filter)
                 }).map(note => <Note key={note.id} {...note} />)}
             </ol>
             <form onSubmit={handleSubmit}>
                 <input type={'text'} onChange={handleChange} value={newNote} />
                 <button >Crear nota</button>
             </form>
+            {error ? <p style={{color : 'red'}}>{error}</p> : ""}
         </div>
     )
 }
