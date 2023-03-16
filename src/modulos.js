@@ -1,10 +1,8 @@
-const Note = ({title, body }) => {
+const Note = ({content, important}) => {
     return (
         <li>
-            <h3>{title}</h3>
-            <p>
-                {body}
-            </p>
+            <h3>{content}</h3>
+            <h3>{important.toString()}</h3>
         </li>
     )
 }

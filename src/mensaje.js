@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Note } from './modulos'
-import {getAllNotes} from './services/notes/getAllNotes.js'
-import { createNote } from './services/notes/createNote'
+import {getAll, create, setToken} from './services/notes/getAllNotes.js'
+import loginService from './services/notes/login'
 
 //! Clase numero 1
 const Message = ({ color, mensaje }) => {
@@ -109,16 +109,28 @@ const RenderList = () => {
     const [loading, setLoading] = useState(false)
     const [filter, setFilter] = useState('')
     const [error, setError] = useState('')
+    const [user, setUser] = useState(null)
 
+    const [username, setUsername ] = useState('')
+    const [password, setPassword ] = useState('')
 
     useEffect(() => {
         setLoading(true)
-        getAllNotes().then((notes) => {
+        getAll().then((notes) => {
             setNotes(notes)
             setLoading(false)
         })
 
     }, [filter])
+
+    useEffect(() => {
+        const loggedUserJson = window.localStorage.getItem('loggedNoteAppUser')
+        if (loggedUserJson) {
+            const user = JSON.parse(loggedUserJson)
+            setUser(user)
+            setToken(user.token)
+        }
+    }, [])
 
     const handleChange = (event) => {
         setNewNote(event.target.value)
@@ -128,22 +140,83 @@ const RenderList = () => {
         event.preventDefault()
 
         const newNoteAddNew = {
-            title: newNote,
-            body: newNote,
-            userId : 1,
+            content: newNote,
+            important: Math.random() > 0.5
         }
 
-        setNotes((prevNotes) => prevNotes.concat(newNoteAddNew))
+        setNotes((prevNotes) => prevNotes.concat({...newNoteAddNew, id: 0}))
 
-        createNote(newNoteAddNew).then(() => {
+        create(newNoteAddNew).then(() => {
             alert("Nota guardada")
         }).catch((error)=>{
-            console.error(error)
+            alert(`No se pudo guardar tu nota: \n${error.message}\n${error.code}`)
             setError("BOOM me he reventado chaval :C")
         })
 
         setNewNote("")
     }
+
+    const handleLoginSubmit = async (event) =>{
+        event.preventDefault()
+        try {
+            const user = await loginService.login({username, password})
+
+            window.localStorage.setItem('loggedNoteAppUser', JSON.stringify(user))
+            setToken(user.token)
+
+            setUser(user)
+            setUsername('')
+            setPassword('')
+
+        } catch (error) {
+            setError(error.message)
+            setTimeout(() => {setError(null)},3000)
+        }
+    }
+
+    const handleLogout = () => {
+        window.localStorage.removeItem('loggedNoteAppUser')
+        setUser(null)
+        setToken(null)
+    }
+
+    const renderLoginForm = () =>(
+        <form onSubmit={handleLoginSubmit}>
+        <div>
+        <input
+            type={'text'}
+            value={username}
+            placeholder='Username'
+            name='Username'
+            onChange={({target}) => setUsername(target.value)}>
+        </input>
+        </div>
+        <div>
+        <input
+            type={'password'}
+            value={password}
+            placeholder='Password'
+            name='Password'
+            onChange={({target}) => setPassword(target.value)}>
+        </input>
+        </div>
+        <button>login</button>
+    </form>
+    )
+
+    const renderCreateNote = () => (
+        <div>
+            <form onSubmit={handleSubmit}>
+            <input placeholder='crear tu nota' type={'text'} onChange={handleChange} value={newNote} />
+            <button >Crear nota</button>
+            </form>
+            <div>
+                <button onClick={handleLogout}>Cerrar session</button>
+            </div>
+        </div>
+    )
+
+
 
     const handleFilter = (event) => setFilter(event.target.value)
 
@@ -151,19 +224,18 @@ const RenderList = () => {
     return (
         <div>
             <h1>Notas</h1>
-            <input  type={'text'} onChange={handleFilter}></input>
+            {
+                user ?  renderCreateNote() : renderLoginForm()
+            }
+            <br/>
+            {error ? <p style={{color : 'red'}}>{error}</p> : ""}
+            <input  type={'text'} onChange={handleFilter} placeholder='Filtrador de notas'></input>
             <p>{loading ? "Cargando...." : ""}</p>
-            <ol style={{ textAlign: "left" }}>
+            <ol style={{ textAlign: "center" }}>
                 {notes.filter((note) => {
-                    return note.title.startsWith(filter)
+                    return note.content.startsWith(filter)
                 }).map(note => <Note key={note.id} {...note} />)}
             </ol>
-            <form onSubmit={handleSubmit}>
-                <input type={'text'} onChange={handleChange} value={newNote} />
-                <button >Crear nota</button>
-            </form>
-
-            {error ? <p style={{color : 'red'}}>{error}</p> : ""}
         </div>
     )
 }

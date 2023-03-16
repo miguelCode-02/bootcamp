@@ -1,10 +1,29 @@
 import axios from "axios"
+const baseUrl = 'http://localhost:3001/api/notes'
 
-export const getAllNotes = () =>{
-    return axios.get("https://jsonplaceholder.typicode.com/posts")
-    .then(response => {
-        const { data, status } = response
-        console.warn(status)
-        return data
-    })
+let token = null
+
+const setToken = newToken => {
+  token = {
+    headers: {
+      Authorization: `Bearer ${newToken}`
+    }
+  }
 }
+
+const getAll = () => {
+  const request = axios.get(baseUrl)
+  return request.then(response => response.data)
+}
+
+const create = (newObject) => {
+  const request = axios.post(baseUrl, newObject, token)
+  return request.then(response => response.data)
+}
+
+const update = (id, newObject) => {
+    const request = axios.put(`${baseUrl}/${id}`, newObject)
+  return request.then(response => response.data)
+}
+
+export { getAll, create, update, setToken }
