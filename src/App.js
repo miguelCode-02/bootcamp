@@ -1,12 +1,11 @@
-import './App.css';
+import './App.css'
 import { Message, Counter, Clicks, RenderList } from './mensaje.js'
 
+// console.log('%c👾', 'font-size: 48px; purple: yellow;')
 
-//console.log('%c👾', 'font-size: 48px; purple: yellow;')
-
-function App() {
+function App () {
   return (
-    <div className="App">
+    <div className='App'>
       <Message color='red' mensaje='Estamos trabajando' />
       <Message color='orange' mensaje='Para mejorar esta aplicacion' />
       <Message color='purple' mensaje='Asi que quedate ahi' />
@@ -19,7 +18,7 @@ function App() {
       <hr />
       <RenderList />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
